@@ -3,17 +3,19 @@ package com.example.LIAXLENT.Lottery.services;
 import com.example.LIAXLENT.Lottery.entities.Employee;
 import com.example.LIAXLENT.Lottery.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class EmployeeServiceImpl implements EmployeeService{
 
     private EmployeeRepository employeeRepository;
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeRepository empRepository){
-        employeeRepository = empRepository;
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository){
+        this.employeeRepository = employeeRepository;
     }
     @Override
     public List<Employee> findAll(){
@@ -28,7 +30,7 @@ public class EmployeeServiceImpl implements EmployeeService{
             employee = emp.get();
         }
         else {
-            throw new RuntimeException("Anställd med id: "+id+" hittades inte");
+            throw new RuntimeException("Anställd med id "+id+" hittades inte");
         }
         return employee;
     }

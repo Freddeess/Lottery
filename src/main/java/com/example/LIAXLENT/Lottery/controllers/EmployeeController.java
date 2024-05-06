@@ -2,10 +2,7 @@ package com.example.LIAXLENT.Lottery.controllers;
 
 import com.example.LIAXLENT.Lottery.entities.Employee;
 import com.example.LIAXLENT.Lottery.services.EmployeeService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -14,14 +11,23 @@ import java.util.List;
 public class EmployeeController {
 
     private EmployeeService employeeService;
+    public EmployeeController(EmployeeService employeeService){
+        this.employeeService = employeeService;
+    }
     @GetMapping("/anställda")
-    public List<Employee> findAll(){
+    public List<Employee> findAllEmployees(){
         return employeeService.findAll();
     }
     @GetMapping("/anställda/{id}")
-    public Employee getEmployee(@PathVariable int id){
+    public Employee findEmployee(@PathVariable int id) {
         return employeeService.findById(id);
     }
+    @PostMapping("/anställda")
+    public Employee createEmployee(@RequestBody Employee employee){
+        return employeeService.save(employee);
+    }
+
+
 
 
 }
