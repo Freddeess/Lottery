@@ -42,7 +42,14 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public void deleteById(int id){
+        Optional<Employee> emp = employeeRepository.findById(id);
+        Employee employee = null;
+        if (emp.isPresent()){
+            employee = emp.get();
+        }
+        else {
+            throw new RuntimeException("Anställd med id "+id+" hittades inte");
+        }
         employeeRepository.deleteById(id);
     }
-
 }

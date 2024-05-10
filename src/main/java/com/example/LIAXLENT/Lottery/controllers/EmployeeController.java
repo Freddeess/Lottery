@@ -14,20 +14,29 @@ public class EmployeeController {
     public EmployeeController(EmployeeService employeeService){
         this.employeeService = employeeService;
     }
-    @GetMapping("/anställda")
+    @GetMapping("/employees")
     public List<Employee> findAllEmployees(){
         return employeeService.findAll();
     }
-    @GetMapping("/anställda/{id}")
+    @GetMapping("/employees/{id}")
     public Employee findEmployee(@PathVariable int id) {
         return employeeService.findById(id);
     }
-    @PostMapping("/anställda")
+    @PostMapping("/employees")
     public Employee createEmployee(@RequestBody Employee employee){
         return employeeService.save(employee);
     }
 
-
+    @PatchMapping("/employees/{id}")
+    public Employee updateEmployee(@PathVariable int id, @RequestBody Employee updatedEmployee){
+    Employee employee = employeeService.findById(id);
+    employee.setXlentCoins(updatedEmployee.getXlentCoins());
+    return employeeService.save(employee);
+    }
+    @DeleteMapping("/employees/{id}")
+    public void deleteEmployee(@PathVariable int id){
+        employeeService.deleteById(id);
+    }
 
 
 }
