@@ -10,7 +10,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class EmployeeController {
 
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
     public EmployeeController(EmployeeService employeeService){
         this.employeeService = employeeService;
     }

@@ -2,6 +2,8 @@ package com.example.LIAXLENT.Lottery.entities;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "employees")
 
@@ -23,6 +25,9 @@ public class Employee {
 
     @Column(name = "xlent_coins")
     private int xlentCoins;
+
+    @OneToMany(targetEntity = Ticket.class, mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<Ticket> tickets;
 
     public int getId() {
         return id;
