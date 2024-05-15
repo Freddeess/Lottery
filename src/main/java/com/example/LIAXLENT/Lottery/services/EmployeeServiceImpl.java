@@ -53,4 +53,12 @@ public class EmployeeServiceImpl implements EmployeeService{
         employeeRepository.deleteById(id);
     }
 
+    @Override
+    public boolean verifyLogin(String email, String password) {
+        Employee employee = employeeRepository.findByEmail(email);
+        if (employee != null && employee.getPassword().equals(password)) {
+            return true;
+        }
+        return false;
+    }
 }
