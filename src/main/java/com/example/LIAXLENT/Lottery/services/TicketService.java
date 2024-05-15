@@ -12,4 +12,5 @@ public interface TicketService {
     Ticket save (int employeeId, int lotteryId);
 
     void deleteById(int id);
+
 }

@@ -1,7 +1,10 @@
 package com.example.LIAXLENT.Lottery.controllers;
 
+import com.example.LIAXLENT.Lottery.entities.Employee;
 import com.example.LIAXLENT.Lottery.entities.Lottery;
+import com.example.LIAXLENT.Lottery.entities.Ticket;
 import com.example.LIAXLENT.Lottery.services.LotteryService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,4 +44,15 @@ public class LotteryController {
     public void deleteLottery(@PathVariable int id){
         lotteryService.deleteById(id);
     }
+    @GetMapping("/lotteries/{id}/draw")
+    public ResponseEntity<?> drawWinner(@PathVariable int id) {
+        try {
+            Ticket winnerTicket = lotteryService.drawWinner(id);
+            Employee winner = winnerTicket.getEmployee();
+            return ResponseEntity.ok("Grattis " + winner.getFirstName() + " " + winner.getLastName() + "! Du är vinnaren av lotteriet med ID " + id + ".");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
+
