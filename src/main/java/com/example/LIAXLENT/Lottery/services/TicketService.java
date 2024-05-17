@@ -9,6 +9,8 @@ public interface TicketService {
 
     Ticket findById(int id);
 
+    List<Ticket> findWinningTickets();
+
     Ticket save (int employeeId, int lotteryId);
 
     void deleteById(int id);

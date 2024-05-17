@@ -35,6 +35,15 @@ public class LotteryServiceImpl implements LotteryService {
     }
 
     @Override
+    public List<Lottery> findActiveLotteries(){
+        return lotteryRepository.getLotteriesByActiveIsTrue();
+    }
+
+    @Override
+    public List<Lottery> findInactiveLotteries(){
+        return lotteryRepository.getLotteriesByActiveIsFalse();
+    }
+    @Override
     public Lottery findById(int id) {
         Optional<Lottery> lottery = lotteryRepository.findById(id);
         if (!lottery.isPresent()) {

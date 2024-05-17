@@ -33,6 +33,11 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    public List<Ticket> findWinningTickets(){
+        return ticketRepository.getTicketsByWinnerIsTrue();
+    }
+
+    @Override
     public Ticket findById(int id){
         Optional<Ticket> tick = ticketRepository.findById(id);
         Ticket ticket = null;

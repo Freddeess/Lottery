@@ -9,6 +9,10 @@ public interface LotteryService {
 
     List<Lottery> findAll();
 
+    List<Lottery> findActiveLotteries();
+
+    List<Lottery> findInactiveLotteries();
+
     Lottery findById(int id);
 
     Lottery createLottery (int id,Lottery lottery);

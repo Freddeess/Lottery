@@ -18,9 +18,18 @@ public class LotteryController {
         this.lotteryService = lotteryService;
     }
     @GetMapping("/lotteries")
-    public List<Lottery> findAllLotteries(){
-        return lotteryService.findAll();
+    public List<Lottery> findAllLotteries(@RequestParam (value = "active", required = false) Boolean active){
+        if (active != null && active){
+            return lotteryService.findActiveLotteries();
+        }
+        if ( active != null && !active){
+            return lotteryService.findInactiveLotteries();
+        }
+        else{
+            return lotteryService.findAll();
+        }
     }
+    
     @GetMapping("/lotteries/{id}")
     public Lottery findLottery(@PathVariable int id) {
         return lotteryService.findById(id);

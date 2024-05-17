@@ -20,13 +20,19 @@ public class TicketController {
         this.ticketService = ticketService;
     }
     @GetMapping("/tickets")
-    public List<Ticket> findAllTickets(){
-        return ticketService.findAll();
+    public List<Ticket> findAllTickets(@RequestParam(value = "winner", required = false) Boolean winner){
+        if (winner != null && winner ){
+            return ticketService.findWinningTickets();
+        }
+        else{
+            return ticketService.findAll();
+        }
     }
     @GetMapping("/tickets/{id}")
     public Ticket findTicket(@PathVariable int id) {
         return ticketService.findById(id);
     }
+
     @PostMapping("/tickets/employees/{employeeId}/lotteries/{lotteryId}")
     public Ticket createTicket(@PathVariable (value = "employeeId") int employeeId,
                                @PathVariable (value = "lotteryId") int lotteryId){
