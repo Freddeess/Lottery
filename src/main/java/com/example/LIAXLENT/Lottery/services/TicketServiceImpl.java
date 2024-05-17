@@ -67,6 +67,9 @@ public class TicketServiceImpl implements TicketService {
 
         if(employee.getXlentCoins()>=lottery.getPriceXlentCoins()){
             employee.setXlentCoins(employee.getXlentCoins()-lottery.getPriceXlentCoins());
+            lottery.getEmployee().setXlentCoins(
+                    lottery.getPriceXlentCoins() +
+                    lottery.getEmployee().getXlentCoins());
         }
         else {
             throw new RuntimeException("Det saknas " +

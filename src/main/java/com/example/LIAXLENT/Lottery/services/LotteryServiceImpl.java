@@ -1,7 +1,9 @@
 package com.example.LIAXLENT.Lottery.services;
 
+import com.example.LIAXLENT.Lottery.entities.Employee;
 import com.example.LIAXLENT.Lottery.entities.Lottery;
 import com.example.LIAXLENT.Lottery.entities.Ticket;
+import com.example.LIAXLENT.Lottery.repositories.EmployeeRepository;
 import com.example.LIAXLENT.Lottery.repositories.LotteryRepository;
 import com.example.LIAXLENT.Lottery.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,14 @@ public class LotteryServiceImpl implements LotteryService {
     private final LotteryRepository lotteryRepository;
     private final TicketRepository ticketRepository;
 
+    private final EmployeeRepository employeeRepository;
     @Autowired
-    public LotteryServiceImpl(LotteryRepository lotteryRepository, TicketRepository ticketRepository) {
+    public LotteryServiceImpl(LotteryRepository lotteryRepository,
+                              TicketRepository ticketRepository,
+                              EmployeeRepository employeeRepository) {
         this.lotteryRepository = lotteryRepository;
         this.ticketRepository = ticketRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
@@ -38,7 +44,20 @@ public class LotteryServiceImpl implements LotteryService {
     }
 
     @Override
-    public Lottery save(Lottery lottery) {
+    public Lottery save(Lottery lottery){
+        return lotteryRepository.save(lottery);
+    }
+    @Override
+    public Lottery createLottery(int employeeId, Lottery lottery) {
+        Optional<Employee> emp = employeeRepository.findById(employeeId);
+        Employee employee = null;
+        if(emp.isPresent()){
+            employee = emp.get();
+        }
+        else{
+            throw new RuntimeException("Anställd med id "+employeeId+" hittades inte");
+        }
+        lottery.setEmployee(employee);
         return lotteryRepository.save(lottery);
     }
 
@@ -64,6 +83,7 @@ public class LotteryServiceImpl implements LotteryService {
         }
 
         Ticket winner = tickets.get(new Random().nextInt(tickets.size()));
+        winner.setWinner(true);
         lottery.setActive(false);
         lotteryRepository.save(lottery);
         return winner;

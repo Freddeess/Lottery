@@ -11,8 +11,9 @@ public interface LotteryService {
 
     Lottery findById(int id);
 
-    Lottery save (Lottery lottery);
+    Lottery createLottery (int id,Lottery lottery);
 
+    Lottery save(Lottery lottery);
     void deleteById(int id);
 
     Ticket drawWinner(int lotteryId);

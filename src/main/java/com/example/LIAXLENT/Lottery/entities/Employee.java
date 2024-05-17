@@ -1,5 +1,6 @@
 package com.example.LIAXLENT.Lottery.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -30,8 +31,12 @@ public class Employee {
     private int xlentCoins;
 
     @OneToMany(targetEntity = Ticket.class, mappedBy = "employee", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Ticket> tickets;
 
+    @OneToMany(targetEntity = Lottery.class, mappedBy = "employee", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Lottery> lotteries;
     public int getId() {
         return id;
     }

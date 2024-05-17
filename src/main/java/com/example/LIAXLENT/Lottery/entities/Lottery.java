@@ -1,5 +1,8 @@
 package com.example.LIAXLENT.Lottery.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Type;
@@ -35,7 +38,12 @@ public class Lottery {
     private boolean active = true;
 
     @OneToMany(targetEntity = Ticket.class, mappedBy = "lottery", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Ticket> tickets;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
 
     public boolean isActive() {
         return active;
@@ -84,4 +92,21 @@ public class Lottery {
     public void setPriceXlentCoins(int priceXlentCoins) {
         this.priceXlentCoins = priceXlentCoins;
     }
+
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(List<Ticket> tickets) {
+        this.tickets = tickets;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
 }
+

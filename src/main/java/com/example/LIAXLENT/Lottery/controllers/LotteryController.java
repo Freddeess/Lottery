@@ -25,10 +25,10 @@ public class LotteryController {
     public Lottery findLottery(@PathVariable int id) {
         return lotteryService.findById(id);
     }
-    @PostMapping("/lotteries")
-    public Lottery createLottery(@RequestBody Lottery lottery){
-        //lottery.setActive(true);
-        return lotteryService.save(lottery);
+    @PostMapping("/lotteries/employees/{employeeId}")
+    public Lottery createLottery(@PathVariable (value = "employeeId") int employeeId,
+                                 @RequestBody Lottery lottery){
+        return lotteryService.createLottery(employeeId, lottery);
     }
     @PutMapping("/lotteries/{id}")
     public Lottery updateLottery(@PathVariable int id, @RequestBody Lottery updatedLottery){

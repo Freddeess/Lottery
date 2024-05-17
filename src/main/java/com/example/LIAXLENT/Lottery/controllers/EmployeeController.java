@@ -30,7 +30,7 @@ public class EmployeeController {
     @PatchMapping("/employees/{id}")
     public Employee updateEmployee(@PathVariable int id, @RequestBody Employee updatedEmployee){
     Employee employee = employeeService.findById(id);
-    employee.setXlentCoins(updatedEmployee.getXlentCoins());
+    employee.setPassword(updatedEmployee.getPassword());
     return employeeService.save(employee);
     }
     @DeleteMapping("/employees/{id}")
