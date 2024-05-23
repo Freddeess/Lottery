@@ -14,4 +14,6 @@ public interface EmployeeService {
 
     void deleteById(int id);
     boolean verifyLogin(String email, String password);
+
+    void registerUser(String email, String password);
 }

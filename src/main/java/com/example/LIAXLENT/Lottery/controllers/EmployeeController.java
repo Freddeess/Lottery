@@ -2,6 +2,8 @@ package com.example.LIAXLENT.Lottery.controllers;
 
 import com.example.LIAXLENT.Lottery.entities.Employee;
 import com.example.LIAXLENT.Lottery.services.EmployeeService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,5 +40,13 @@ public class EmployeeController {
         employeeService.deleteById(id);
     }
 
-
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestParam String email, @RequestParam String password) {
+        try {
+            employeeService.registerUser(email, password);
+            return ResponseEntity.ok("Registrering lyckades!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }

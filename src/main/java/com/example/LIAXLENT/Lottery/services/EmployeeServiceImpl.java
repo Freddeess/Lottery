@@ -61,4 +61,13 @@ public class EmployeeServiceImpl implements EmployeeService{
         }
         return false;
     }
+    @Override
+    public void registerUser(String email, String password) {
+        Employee employee = employeeRepository.findByEmail(email);
+        if (employee == null) {
+            throw new RuntimeException("Användare med email " + email + " hittades inte");
+        }
+        employee.setPassword(password);
+        employeeRepository.save(employee);
+    }
 }
