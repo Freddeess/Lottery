@@ -4,6 +4,9 @@ import com.example.LIAXLENT.Lottery.entities.Employee;
 import com.example.LIAXLENT.Lottery.entities.Lottery;
 import com.example.LIAXLENT.Lottery.entities.Ticket;
 import com.example.LIAXLENT.Lottery.services.LotteryService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +16,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class LotteryController {
 
+    @Autowired
     private final LotteryService lotteryService;
     public LotteryController(LotteryService lotteryService){
         this.lotteryService = lotteryService;
@@ -62,6 +66,15 @@ public class LotteryController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+    @GetMapping("/my-lotteries")
+    public ResponseEntity<?> findMyLotteries(HttpSession session) {
+        Employee loggedInUser = (Employee) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return new ResponseEntity<>("Ingen användare är inloggad.", HttpStatus.UNAUTHORIZED);
+        }
+        List<Lottery> lotteries = lotteryService.findLotteriesByEmployeeId(loggedInUser.getId());
+        return new ResponseEntity<>(lotteries, HttpStatus.OK);
     }
 }
 

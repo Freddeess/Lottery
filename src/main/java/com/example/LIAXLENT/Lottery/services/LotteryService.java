@@ -21,4 +21,6 @@ public interface LotteryService {
     void deleteById(int id);
 
     Ticket drawWinner(int lotteryId);
+
+    List<Lottery> findLotteriesByEmployeeId(int employeeId);
 }

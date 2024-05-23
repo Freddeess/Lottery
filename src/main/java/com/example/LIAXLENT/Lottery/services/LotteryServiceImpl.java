@@ -97,4 +97,8 @@ public class LotteryServiceImpl implements LotteryService {
         lotteryRepository.save(lottery);
         return winner;
     }
+    @Override
+    public List<Lottery> findLotteriesByEmployeeId(int employeeId) {
+        return lotteryRepository.findByEmployeeId(employeeId);
+    }
 }
