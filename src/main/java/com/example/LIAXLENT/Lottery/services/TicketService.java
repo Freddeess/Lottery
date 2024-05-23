@@ -15,4 +15,6 @@ public interface TicketService {
 
     void deleteById(int id);
 
+    List<Ticket> findByEmployeeId(int employeeId);
+
 }

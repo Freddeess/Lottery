@@ -70,4 +70,8 @@ public class EmployeeServiceImpl implements EmployeeService{
         employee.setPassword(password);
         employeeRepository.save(employee);
     }
+    @Override
+    public Employee findByEmail(String email) {
+        return employeeRepository.findByEmail(email);
+    }
 }

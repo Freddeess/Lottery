@@ -16,4 +16,6 @@ public interface EmployeeService {
     boolean verifyLogin(String email, String password);
 
     void registerUser(String email, String password);
+
+    Employee findByEmail(String email);
 }

@@ -1,10 +1,13 @@
 package com.example.LIAXLENT.Lottery.controllers;
 
+import com.example.LIAXLENT.Lottery.entities.Employee;
 import com.example.LIAXLENT.Lottery.entities.Lottery;
 import com.example.LIAXLENT.Lottery.entities.Ticket;
 import com.example.LIAXLENT.Lottery.repositories.LotteryRepository;
 import com.example.LIAXLENT.Lottery.services.LotteryService;
 import com.example.LIAXLENT.Lottery.services.TicketService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class TicketController {
 
+    @Autowired
     private final TicketService ticketService;
 
     public TicketController(TicketService ticketService){
@@ -42,5 +46,15 @@ public class TicketController {
     @DeleteMapping("/tickets/{id}")
     public void deleteTicket(@PathVariable int id){
         ticketService.deleteById(id);
+    }
+
+    @GetMapping("/tickets/my")
+    public List<Ticket> findMyTickets(HttpSession session) {
+        Employee loggedInUser = (Employee) session.getAttribute("loggedInUser");
+        if (loggedInUser != null) {
+            return ticketService.findByEmployeeId(loggedInUser.getId());
+        } else {
+            throw new RuntimeException("Ingen användare är inloggad.");
+        }
     }
 }

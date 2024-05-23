@@ -1,5 +1,6 @@
 package com.example.LIAXLENT.Lottery.controllers;
 
+import com.example.LIAXLENT.Lottery.entities.Employee;
 import com.example.LIAXLENT.Lottery.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 @RequestMapping("/api")
 public class LoginController {
@@ -17,12 +20,19 @@ public class LoginController {
     private EmployeeService employeeService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password, HttpSession session) {
         if (employeeService.verifyLogin(email, password)) {
+            Employee employee = employeeService.findByEmail(email);
+            session.setAttribute("loggedInUser", employee);
             return ResponseEntity.ok("Inloggningen lyckades!");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Inloggningen misslyckades.");
         }
     }
-}
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok("Utloggningen lyckades!");
+    }
+}

@@ -99,4 +99,13 @@ public class TicketServiceImpl implements TicketService {
         }
         ticketRepository.deleteById(id);
     }
+    @Override
+    public List<Ticket> findByEmployeeId(int employeeId) {
+        Optional<Employee> employee = employeeRepository.findById(employeeId);
+        if (employee.isPresent()) {
+            return employee.get().getTickets();
+        } else {
+            throw new RuntimeException("Anställd med id " + employeeId + " hittades inte");
+        }
+    }
 }
