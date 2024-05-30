@@ -13,4 +13,9 @@ public interface LotteryRepository extends JpaRepository<Lottery, Integer> {
     List<Lottery> getLotteriesByActiveIsFalse();
 
     List<Lottery> findByEmployeeId(int employeeId);
+
+    List<Lottery> findByCategoryId(int categoryId);
+
+    List<Lottery> findAllByActiveTrueAndCategoryId(int categoryId);
+
 }

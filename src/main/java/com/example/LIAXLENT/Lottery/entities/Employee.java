@@ -3,6 +3,7 @@ package com.example.LIAXLENT.Lottery.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -21,14 +22,22 @@ public class Employee {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "password")
-    private String password;
-
     @Column(name = "email")
     private String email;
 
-    @Column(name = "xlent_coins")
-    private int xlentCoins;
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "last_update")
+    private Timestamp lastUpdate;
+    @PreUpdate
+    protected void onUpdate(){
+        lastUpdate = new Timestamp(System.currentTimeMillis());
+    }
+
+    @OneToOne(targetEntity = Account.class, mappedBy = "employee", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Account account;
 
     @OneToMany(targetEntity = Ticket.class, mappedBy = "employee", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -37,6 +46,9 @@ public class Employee {
     @OneToMany(targetEntity = Lottery.class, mappedBy = "employee", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Lottery> lotteries;
+
+    public Employee(){};
+
     public int getId() {
         return id;
     }
@@ -61,14 +73,6 @@ public class Employee {
         this.lastName = lastName;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -77,13 +81,38 @@ public class Employee {
         this.email = email;
     }
 
-    public int getXlentCoins() {
-        return xlentCoins;
+    public String getPassword() {
+        return password;
     }
 
-    public void setXlentCoins(int xlentCoins) {
-        this.xlentCoins = xlentCoins;
+    public void setPassword(String password) {
+        this.password = password;
     }
+
+    public Timestamp getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Timestamp lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public List<Lottery> getLotteries() {
+        return lotteries;
+    }
+
+    public void setLotteries(List<Lottery> lotteries) {
+        this.lotteries = lotteries;
+    }
+
     public List<Ticket> getTickets() {
         return tickets;
     }
@@ -91,4 +120,6 @@ public class Employee {
     public void setTickets(List<Ticket> tickets) {
         this.tickets = tickets;
     }
+
+
 }

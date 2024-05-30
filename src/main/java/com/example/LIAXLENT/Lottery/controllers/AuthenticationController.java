@@ -2,7 +2,6 @@ package com.example.LIAXLENT.Lottery.controllers;
 
 import com.example.LIAXLENT.Lottery.entities.Employee;
 import com.example.LIAXLENT.Lottery.services.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,19 +13,23 @@ import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api")
-public class LoginController {
+public class AuthenticationController {
 
-    @Autowired
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
+
+    public AuthenticationController(EmployeeService employeeService){
+        this.employeeService = employeeService;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password, HttpSession session) {
-        if (employeeService.verifyLogin(email, password)) {
+        try {
+            employeeService.verifyLogin(email, password);
             Employee employee = employeeService.findByEmail(email);
             session.setAttribute("loggedInUser", employee);
             return ResponseEntity.ok("Inloggningen lyckades!");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Inloggningen misslyckades.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -34,5 +37,15 @@ public class LoginController {
     public ResponseEntity<String> logout(HttpSession session) {
         session.invalidate();
         return ResponseEntity.ok("Utloggningen lyckades!");
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestParam String email, @RequestParam String password) {
+        try {
+            employeeService.registerUser(email, password);
+            return ResponseEntity.ok("Registrering lyckades!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }

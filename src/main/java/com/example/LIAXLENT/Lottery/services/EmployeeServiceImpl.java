@@ -5,6 +5,7 @@ import com.example.LIAXLENT.Lottery.repositories.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,42 +25,38 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public Employee findById(int id){
-        Optional<Employee> emp = employeeRepository.findById(id);
-        Employee employee = null;
-        if (emp.isPresent()){
-            employee = emp.get();
+        Optional<Employee> employee = employeeRepository.findById(id);
+        if(employee.isEmpty()){
+            throw new RuntimeException("Anställd med id " + id +  "hittades inte");
         }
-        else {
-            throw new RuntimeException("Anställd med id "+id+" hittades inte");
-        }
-        return employee;
+        return employee.get();
     }
-
     @Override
     public Employee save (Employee employee){
         return employeeRepository.save(employee);
     }
-
     @Override
     public void deleteById(int id){
-        Optional<Employee> emp = employeeRepository.findById(id);
-        Employee employee = null;
-        if (emp.isPresent()){
-            employee = emp.get();
-        }
-        else {
-            throw new RuntimeException("Anställd med id "+id+" hittades inte");
+        if (!employeeRepository.existsById(id)) {
+            throw new RuntimeException("Anställd med id " + id + " hittades inte");
         }
         employeeRepository.deleteById(id);
     }
 
     @Override
+    public Employee findByEmail(String email) {
+        return employeeRepository.findByEmail(email);
+    }
+    @Override
     public boolean verifyLogin(String email, String password) {
         Employee employee = employeeRepository.findByEmail(email);
-        if (employee != null && employee.getPassword().equals(password)) {
-            return true;
+        if(employee == null){
+            throw new RuntimeException("Användare med email " + email + " hittades inte");
         }
-        return false;
+        if(!employee.getPassword().equals(password)){
+            throw new RuntimeException("Felaktigt lösenord!");
+        }
+        return true;
     }
     @Override
     public void registerUser(String email, String password) {
@@ -67,11 +64,13 @@ public class EmployeeServiceImpl implements EmployeeService{
         if (employee == null) {
             throw new RuntimeException("Användare med email " + email + " hittades inte");
         }
-        employee.setPassword(password);
+        if (employee.getPassword() == null){
+            employee.setPassword(password);
+        } else{
+            throw new RuntimeException("Användaren är redan registrerad");
+        }
+
         employeeRepository.save(employee);
     }
-    @Override
-    public Employee findByEmail(String email) {
-        return employeeRepository.findByEmail(email);
-    }
+
 }

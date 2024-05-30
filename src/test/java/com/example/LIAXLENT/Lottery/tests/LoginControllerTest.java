@@ -1,6 +1,6 @@
 package com.example.LIAXLENT.Lottery.tests;
 
-import com.example.LIAXLENT.Lottery.controllers.LoginController;
+import com.example.LIAXLENT.Lottery.controllers.AuthenticationController;
 import com.example.LIAXLENT.Lottery.services.EmployeeService;
 
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(LoginController.class)
+@WebMvcTest(AuthenticationController.class)
 public class LoginControllerTest {
 
     @Autowired

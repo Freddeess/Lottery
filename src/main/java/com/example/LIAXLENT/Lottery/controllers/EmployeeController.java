@@ -40,13 +40,4 @@ public class EmployeeController {
         employeeService.deleteById(id);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestParam String email, @RequestParam String password) {
-        try {
-            employeeService.registerUser(email, password);
-            return ResponseEntity.ok("Registrering lyckades!");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
 }

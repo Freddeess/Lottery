@@ -1,11 +1,8 @@
 package com.example.LIAXLENT.Lottery.services;
 
-import com.example.LIAXLENT.Lottery.entities.Employee;
-import com.example.LIAXLENT.Lottery.entities.Lottery;
-import com.example.LIAXLENT.Lottery.entities.Ticket;
-import com.example.LIAXLENT.Lottery.repositories.EmployeeRepository;
-import com.example.LIAXLENT.Lottery.repositories.LotteryRepository;
-import com.example.LIAXLENT.Lottery.repositories.TicketRepository;
+import com.example.LIAXLENT.Lottery.entities.*;
+import com.example.LIAXLENT.Lottery.repositories.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +14,21 @@ public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
     private final LotteryRepository lotteryRepository;
+    private final TransactionRepository transactionRepository;
     private final EmployeeRepository employeeRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
     @Autowired
     public TicketServiceImpl(TicketRepository ticketRepository,
                              LotteryRepository lotteryRepository,
-                             EmployeeRepository employeeRepository){
+                             AccountRepository accountRepository,
+                             TransactionRepository transactionRepository,
+                             EmployeeRepository employeeRepository,
+                             PaymentMethodRepository paymentMethodRepository){
         this.ticketRepository = ticketRepository;
         this.lotteryRepository = lotteryRepository;
+        this.transactionRepository = transactionRepository;
         this.employeeRepository = employeeRepository;
+        this.paymentMethodRepository = paymentMethodRepository;
     }
 
     @Override
@@ -38,64 +42,88 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    public List<Ticket> findActiveTickets(){
+        return ticketRepository.getTicketsByLotteryActiveIsTrue();
+    }
+    @Override
     public Ticket findById(int id){
-        Optional<Ticket> tick = ticketRepository.findById(id);
-        Ticket ticket = null;
-        if (tick.isPresent()){
-            ticket = tick.get();
-        }
-        else {
+        Optional<Ticket> ticket = ticketRepository.findById(id);
+        if (ticket.isEmpty()){
             throw new RuntimeException("Lott med id "+id+" hittades inte");
         }
-        return ticket;
+        return ticket.get();
     }
 
-    @Override
-    public Ticket save (int employeeId, int lotteryId){
-        Optional<Employee> emp = employeeRepository.findById(employeeId);
-        Employee employee = null;
-        if(emp.isPresent()){
-            employee = emp.get();
-        }
-        else{
-            throw new RuntimeException("Anställd med id "+employeeId+" hittades inte");
-        }
+    @Transactional
+    public Ticket createTicket (int employeeId, int lotteryId, int paymentMethodId){
+        Employee buyer = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Anställd med id "+ employeeId +" hittades inte"));
+        Lottery lottery = lotteryRepository.findById(lotteryId)
+                .orElseThrow(() -> new RuntimeException("Lotteri med id "+ lotteryId +" hittades inte"));
+        PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentMethodId)
+                .orElseThrow(() -> new RuntimeException("Betalningsmetod med id "+ paymentMethodId +" hittades inte"));
 
-        Optional<Lottery> lot = lotteryRepository.findById(lotteryId);
-        Lottery lottery = null;
-        if(lot.isPresent()){
-            lottery = lot.get();
-        }
-        else{
-            throw new RuntimeException("Lott med id "+lotteryId+" hittades inte");
-        }
+        Employee seller = lottery.getEmployee();
 
-        if(employee.getXlentCoins()>=lottery.getPriceXlentCoins()){
-            employee.setXlentCoins(employee.getXlentCoins()-lottery.getPriceXlentCoins());
-            lottery.getEmployee().setXlentCoins(
-                    lottery.getPriceXlentCoins() +
-                    lottery.getEmployee().getXlentCoins());
-        }
-        else {
-            throw new RuntimeException("Det saknas " +
-                    (employee.getXlentCoins()-lottery.getPriceXlentCoins())+
-                    " XlentCoins för att utföra köpet");
-        }
+        int buyerBalance = buyer.getAccount().getBalance();
+        int sellerBalance = seller.getAccount().getBalance();
+        int price;
+
+        Transaction buyerTransaction = new Transaction();
+        Transaction sellerTransaction = new Transaction();
+
         Ticket ticket = new Ticket();
-        ticket.setEmployee(employee);
+
+        switch (paymentMethod.getName().toLowerCase()){
+            case "xlentcoins":
+                price = lottery.getPriceXlentCoins();
+                if(buyerBalance<price){
+                    throw new RuntimeException("För lågt saldo");
+                }
+                if(!buyer.equals(seller)){
+                    buyer.getAccount().setBalance(buyerBalance-price);
+                    seller.getAccount().setBalance(sellerBalance+price);
+                }
+
+                buyerTransaction.setAccount(buyer.getAccount());
+                buyerTransaction.setXlentCoins(-price);
+                buyerTransaction.setTicket(ticket);
+                transactionRepository.save(buyerTransaction);
+
+                sellerTransaction.setAccount(seller.getAccount());
+                sellerTransaction.setXlentCoins(price);
+                sellerTransaction.setTicket(ticket);
+                transactionRepository.save(sellerTransaction);
+                break;
+            case "sek":
+                price = lottery.getPriceSEK();
+
+                buyerTransaction.setAccount(buyer.getAccount());
+                buyerTransaction.setSek(-price);
+                buyerTransaction.setTicket(ticket);
+                transactionRepository.save(buyerTransaction);
+
+                sellerTransaction.setAccount(seller.getAccount());
+                sellerTransaction.setSek(price);
+                sellerTransaction.setTicket(ticket);
+                transactionRepository.save(sellerTransaction);
+                break;
+            default:
+                throw new IllegalArgumentException("Ogiltig betalningsmetod");
+
+        }
+
+        ticket.setEmployee(buyer);
         ticket.setLottery(lottery);
+        ticket.setAmount(price);
+        ticket.setPaymentMethod(paymentMethod);
         return ticketRepository.save(ticket);
     }
 
     @Override
     public void deleteById(int id){
-        Optional<Ticket> tick = ticketRepository.findById(id);
-        Ticket ticket = null;
-        if (tick.isPresent()){
-            ticket = tick.get();
-        }
-        else {
-            throw new RuntimeException("Lott med id "+id+" hittades inte");
+        if (!ticketRepository.existsById(id)) {
+            throw new RuntimeException("Lott med id " + id + " hittades inte");
         }
         ticketRepository.deleteById(id);
     }
@@ -108,4 +136,7 @@ public class TicketServiceImpl implements TicketService {
             throw new RuntimeException("Anställd med id " + employeeId + " hittades inte");
         }
     }
+
+
+
 }

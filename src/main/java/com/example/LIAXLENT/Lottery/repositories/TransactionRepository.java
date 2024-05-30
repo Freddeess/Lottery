@@ -1,11 +1,9 @@
 package com.example.LIAXLENT.Lottery.repositories;
 
-import com.example.LIAXLENT.Lottery.entities.Employee;
+import com.example.LIAXLENT.Lottery.entities.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
-    Employee findByEmail(String email);
-
+public interface TransactionRepository extends JpaRepository<Transaction, Integer> {
 }

@@ -11,10 +11,12 @@ public interface TicketService {
 
     List<Ticket> findWinningTickets();
 
-    Ticket save (int employeeId, int lotteryId);
+    Ticket createTicket (int employeeId, int lotteryId, int paymentMethodId);
 
     void deleteById(int id);
 
     List<Ticket> findByEmployeeId(int employeeId);
+
+    List<Ticket> findActiveTickets();
 
 }
