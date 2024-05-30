@@ -5,7 +5,6 @@ import com.example.LIAXLENT.Lottery.entities.Lottery;
 import com.example.LIAXLENT.Lottery.entities.Ticket;
 import com.example.LIAXLENT.Lottery.services.LotteryService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,6 +45,23 @@ public class LotteryController {
         }
         else{
             return lotteryService.findLotteriesByCategoryId(categoryId);
+        }
+
+    }
+    @GetMapping("/my-lotteries")
+    public ResponseEntity<?> findMyLotteries(HttpSession session,
+                                             @RequestParam (value = "active", required = false) Boolean active) {
+        Employee loggedInUser = (Employee) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return new ResponseEntity<>("Ingen användare är inloggad.", HttpStatus.UNAUTHORIZED);
+        }
+        else if (active != null && active){
+            List<Lottery> lotteries = lotteryService.findActiveLotteriesByEmployeeId(loggedInUser.getId());
+            return new ResponseEntity<>(lotteries, HttpStatus.OK);
+        }
+        else {
+            List<Lottery> lotteries = lotteryService.findLotteriesByEmployeeId(loggedInUser.getId());
+            return new ResponseEntity<>(lotteries, HttpStatus.OK);
         }
 
     }
@@ -91,14 +107,6 @@ public class LotteryController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @GetMapping("/my-lotteries")
-    public ResponseEntity<?> findMyLotteries(HttpSession session) {
-        Employee loggedInUser = (Employee) session.getAttribute("loggedInUser");
-        if (loggedInUser == null) {
-            return new ResponseEntity<>("Ingen användare är inloggad.", HttpStatus.UNAUTHORIZED);
-        }
-        List<Lottery> lotteries = lotteryService.findLotteriesByEmployeeId(loggedInUser.getId());
-        return new ResponseEntity<>(lotteries, HttpStatus.OK);
-    }
+
 }
 

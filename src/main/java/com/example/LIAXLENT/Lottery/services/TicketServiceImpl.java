@@ -53,6 +53,25 @@ public class TicketServiceImpl implements TicketService {
         }
         return ticket.get();
     }
+    @Override
+    public List<Ticket> findByEmployeeId(int employeeId) {
+        Optional<Employee> employee = employeeRepository.findById(employeeId);
+        if (employee.isPresent()) {
+            return employee.get().getTickets();
+        } else {
+            throw new RuntimeException("Anställd med id " + employeeId + " hittades inte");
+        }
+    }
+
+    @Override
+    public List<Ticket> findByEmployeeIdAndLotteryActiveTrue(int employeeId) {
+        return ticketRepository.findByEmployeeIdAndLotteryActiveTrue(employeeId);
+    }
+
+    @Override
+    public List<Ticket> findByEmployeeIdAndWinnerIsTrue(int employeeId){
+        return ticketRepository.findByEmployeeIdAndWinnerIsTrue(employeeId);
+    }
 
     @Transactional
     public Ticket createTicket (int employeeId, int lotteryId, int paymentMethodId){
@@ -126,15 +145,6 @@ public class TicketServiceImpl implements TicketService {
             throw new RuntimeException("Lott med id " + id + " hittades inte");
         }
         ticketRepository.deleteById(id);
-    }
-    @Override
-    public List<Ticket> findByEmployeeId(int employeeId) {
-        Optional<Employee> employee = employeeRepository.findById(employeeId);
-        if (employee.isPresent()) {
-            return employee.get().getTickets();
-        } else {
-            throw new RuntimeException("Anställd med id " + employeeId + " hittades inte");
-        }
     }
 
 

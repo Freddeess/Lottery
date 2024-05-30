@@ -57,6 +57,25 @@ public class LotteryServiceImpl implements LotteryService {
         }
         return lottery.get();
     }
+    @Override
+    public List<Lottery> findLotteriesByEmployeeId(int employeeId) {
+        return lotteryRepository.findByEmployeeId(employeeId);
+    }
+
+    @Override
+    public List<Lottery> findLotteriesByCategoryId(int categoryId){
+        return lotteryRepository.findByCategoryId(categoryId);
+    }
+
+    @Override
+    public List<Lottery> findActiveLotteriesByCategoryId(int categoryId){
+        return lotteryRepository.findAllByActiveTrueAndCategoryId(categoryId);
+    }
+
+    @Override
+    public List<Lottery> findActiveLotteriesByEmployeeId(int employeeId){
+        return lotteryRepository.findAllByActiveTrueAndEmployeeId(employeeId);
+    }
 
     @Override
     public Lottery save(Lottery lottery){
@@ -107,19 +126,6 @@ public class LotteryServiceImpl implements LotteryService {
         lotteryRepository.save(lottery);
         return winner;
     }
-    @Override
-    public List<Lottery> findLotteriesByEmployeeId(int employeeId) {
-        return lotteryRepository.findByEmployeeId(employeeId);
-    }
 
-    @Override
-    public List<Lottery> findLotteriesByCategoryId(int categoryId){
-        return lotteryRepository.findByCategoryId(categoryId);
-    }
-
-    @Override
-    public List<Lottery> findActiveLotteriesByCategoryId(int categoryId){
-        return lotteryRepository.findAllByActiveTrueAndCategoryId(categoryId);
-    }
 
 }

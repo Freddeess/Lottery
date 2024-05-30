@@ -11,7 +11,9 @@ public interface AccountService {
 
     Optional<Account> findById(int id);
 
-    Account save (Account account);
+    Account createAccount (int employeeId);
+
+    Account updateBalance(int id, int balance);
 
     void deleteById(int id);
 

@@ -19,4 +19,8 @@ public interface TicketService {
 
     List<Ticket> findActiveTickets();
 
+    List<Ticket> findByEmployeeIdAndLotteryActiveTrue(int employeeId);
+
+    List<Ticket> findByEmployeeIdAndWinnerIsTrue(int employeeId);
+
 }
