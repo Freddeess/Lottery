@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
-@Table(name = "accounts")
+@Table(name = "accounts", uniqueConstraints = @UniqueConstraint(columnNames = "employee_id"))
 public class Account {
 
     @Id
@@ -20,15 +20,15 @@ public class Account {
 
     @Column(name = "last_update")
     private Timestamp lastUpdate;
+
     @PreUpdate
     protected void onUpdate(){
         lastUpdate = new Timestamp(System.currentTimeMillis());
     }
 
     @OneToOne
-    @JoinColumn(name = "employee_id")
+    @JoinColumn(name = "employee_id", unique = true)
     private Employee employee;
-
 
     @OneToMany(targetEntity = Transaction.class, mappedBy = "account", cascade = CascadeType.ALL)
     @JsonIgnore

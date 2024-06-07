@@ -8,7 +8,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "employees")
-
 public class Employee {
 
     @Id
@@ -30,6 +29,7 @@ public class Employee {
 
     @Column(name = "last_update")
     private Timestamp lastUpdate;
+
     @PreUpdate
     protected void onUpdate(){
         lastUpdate = new Timestamp(System.currentTimeMillis());

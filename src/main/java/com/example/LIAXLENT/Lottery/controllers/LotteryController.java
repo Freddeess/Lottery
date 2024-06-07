@@ -5,7 +5,6 @@ import com.example.LIAXLENT.Lottery.entities.Lottery;
 import com.example.LIAXLENT.Lottery.entities.Ticket;
 import com.example.LIAXLENT.Lottery.services.LotteryService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,58 +16,54 @@ import java.util.List;
 public class LotteryController {
 
     private final LotteryService lotteryService;
-    public LotteryController(LotteryService lotteryService){
+
+    public LotteryController(LotteryService lotteryService) {
         this.lotteryService = lotteryService;
     }
+
     @GetMapping("/lotteries")
-    public List<Lottery> findAllLotteries(@RequestParam (value = "active", required = false) Boolean active){
-        if (active != null && active){
+    public List<Lottery> findAllLotteries(@RequestParam(value = "active", required = false) Boolean active) {
+        if (active != null && active) {
             return lotteryService.findActiveLotteries();
         }
-        if ( active != null && !active){
+        if (active != null && !active) {
             return lotteryService.findInactiveLotteries();
-        }
-        else {
+        } else {
             return lotteryService.findAll();
         }
     }
-    
+
     @GetMapping("/lotteries/{id}")
     public Lottery findLottery(@PathVariable int id) {
         return lotteryService.findById(id);
     }
 
     @GetMapping("/lotteries/categories/{categoryId}")
-    public List<Lottery> findLotteriesByCategory(@PathVariable (value = "categoryId") int categoryId,
-                                                 @RequestParam (value = "active", required = false) Boolean active){
-        if(active != null && active){
+    public List<Lottery> findLotteriesByCategory(@PathVariable(value = "categoryId") int categoryId,
+                                                 @RequestParam(value = "active", required = false) Boolean active) {
+        if (active != null && active) {
             return lotteryService.findActiveLotteriesByCategoryId(categoryId);
-        }
-        else{
+        } else {
             return lotteryService.findLotteriesByCategoryId(categoryId);
         }
-
-    }
-
-     @PostMapping("/lotteries/employees/{employeeId}/categories/{categoryId}")
-    public Lottery createLottery(@PathVariable (value = "employeeId") int employeeId,
-                                 @PathVariable (value = "categoryId") int categoryId,
-                                 @RequestBody Lottery lottery){
-        return lotteryService.createLottery(employeeId, lottery,categoryId);
     }
 
     @PostMapping("/lotteries/categories/{categoryId}")
-    public ResponseEntity<?>  createLottery(HttpSession session, @RequestBody Lottery lottery,
-                                            @PathVariable (value = "categoryId") int categoryId) {
+    public ResponseEntity<?> createLottery(HttpSession session, @RequestBody Lottery lottery,
+                                           @PathVariable(value = "categoryId") int categoryId) {
         Employee loggedInUser = (Employee) session.getAttribute("loggedInUser");
+        System.out.println("Session ID vid lotteriskapande: " + session.getId());
         if (loggedInUser == null) {
+            System.out.println("Ingen användare är inloggad.");
             return new ResponseEntity<>("Ingen användare är inloggad.", HttpStatus.UNAUTHORIZED);
         }
+        System.out.println("Inloggad användare vid lotteriskapande: " + loggedInUser.getEmail());
         Lottery createdLottery = lotteryService.createLottery(loggedInUser.getId(), lottery, categoryId);
         return new ResponseEntity<>(createdLottery, HttpStatus.CREATED);
     }
+
     @PutMapping("/lotteries/{id}")
-    public Lottery updateLottery(@PathVariable int id, @RequestBody Lottery updatedLottery){
+    public Lottery updateLottery(@PathVariable int id, @RequestBody Lottery updatedLottery) {
         Lottery lottery = lotteryService.findById(id);
         lottery.setName(updatedLottery.getName());
         lottery.setDescription(updatedLottery.getDescription());
@@ -77,10 +72,12 @@ public class LotteryController {
         lottery.setActive(updatedLottery.isActive());
         return lotteryService.save(lottery);
     }
+
     @DeleteMapping("/lotteries/{id}")
-    public void deleteLottery(@PathVariable int id){
+    public void deleteLottery(@PathVariable int id) {
         lotteryService.deleteById(id);
     }
+
     @GetMapping("/lotteries/{id}/draw")
     public ResponseEntity<?> drawWinner(@PathVariable int id) {
         try {
@@ -91,14 +88,16 @@ public class LotteryController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @GetMapping("/my-lotteries")
     public ResponseEntity<?> findMyLotteries(HttpSession session) {
         Employee loggedInUser = (Employee) session.getAttribute("loggedInUser");
+        System.out.println("Session ID vid hämtning av mina lotterier: " + session.getId());
         if (loggedInUser == null) {
+            System.out.println("Ingen användare är inloggad.");
             return new ResponseEntity<>("Ingen användare är inloggad.", HttpStatus.UNAUTHORIZED);
         }
         List<Lottery> lotteries = lotteryService.findLotteriesByEmployeeId(loggedInUser.getId());
         return new ResponseEntity<>(lotteries, HttpStatus.OK);
     }
 }
-

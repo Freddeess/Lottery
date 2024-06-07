@@ -27,11 +27,13 @@ public class AuthenticationController {
             employeeService.verifyLogin(email, password);
             Employee employee = employeeService.findByEmail(email);
             session.setAttribute("loggedInUser", employee);
+            System.out.println("Inloggad användare: " + employee.getEmail());
             return ResponseEntity.ok("Inloggningen lyckades!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpSession session) {
