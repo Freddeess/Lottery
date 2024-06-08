@@ -42,7 +42,7 @@ public class AccountServiceImpl implements AccountService {
     public Account findAccountByEmployeeId(int employeeId) {
         List<Account> accounts = accountRepository.findByEmployeeId(employeeId);
         if (accounts.size() > 1) {
-            throw new RuntimeException("Mer än ett konto hittades med employee ID: " + employeeId);
+            throw new RuntimeException("More than one account found for employee ID: " + employeeId);
         }
         if (accounts.isEmpty()) {
             System.out.println("Inga konton hittades för employee ID: " + employeeId);
