@@ -10,7 +10,12 @@ import java.util.List;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     List<Ticket> findByLottery(Lottery lottery);
+
     List<Ticket> getTicketsByWinnerIsTrue();
 
     List<Ticket> getTicketsByLotteryActiveIsTrue();
+
+    List<Ticket> findByEmployeeIdAndLotteryActiveTrue(int employeeId);
+
+    List<Ticket> findByEmployeeIdAndWinnerIsTrue(int employeeId);
 }

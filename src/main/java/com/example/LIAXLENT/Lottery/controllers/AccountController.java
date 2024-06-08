@@ -8,9 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,5 +40,17 @@ public class AccountController {
         }
         Integer balance = accountService.findBalanceByEmployeeId(loggedInUser.getId());
         return new ResponseEntity<>(balance, HttpStatus.OK);
+    }
+
+    @PostMapping("/account/employees/{employeeId}")
+    public Account createAccount(@PathVariable(value = "employeeId") int employeeId){
+        return accountService.createAccount(employeeId);
+    }
+
+    @PatchMapping("/account/{id}")
+    public Account updateBalance(@PathVariable(value = "id") int id,
+                                 @RequestParam (value = "balance", required = true) int balance){
+        return accountService.updateBalance(id,balance);
+
     }
 }

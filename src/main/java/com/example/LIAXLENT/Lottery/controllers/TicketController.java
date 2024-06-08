@@ -35,16 +35,28 @@ public class TicketController {
         }
     }
 
-
     @GetMapping("/my-tickets")
-    public List<Ticket> findMyTickets(HttpSession session) {
+    public ResponseEntity<?> findMyTickets(HttpSession session,
+                                            @RequestParam(value = "winner", required = false) Boolean winner,
+                                            @RequestParam(value = "active", required = false) Boolean active) {
         Employee loggedInUser = (Employee) session.getAttribute("loggedInUser");
-        if (loggedInUser != null) {
-            return ticketService.findByEmployeeId(loggedInUser.getId());
-        } else {
-            throw new RuntimeException("Ingen användare är inloggad.");
+        if (loggedInUser == null) {
+            return new ResponseEntity<>("Ingen användare är inloggad.", HttpStatus.UNAUTHORIZED);
+        }
+        if (winner != null && winner){
+            List<Ticket> tickets = ticketService.findByEmployeeIdAndWinnerIsTrue(loggedInUser.getId());
+            return new ResponseEntity<>(tickets, HttpStatus.OK);
+        }
+        if (active != null && active) {
+            List<Ticket> tickets = ticketService.findByEmployeeIdAndLotteryActiveTrue(loggedInUser.getId());
+            return new ResponseEntity<>(tickets, HttpStatus.OK);
+        }
+        else {
+            List<Ticket> tickets = ticketService.findByEmployeeId(loggedInUser.getId());
+            return new ResponseEntity<>(tickets, HttpStatus.OK);
         }
     }
+
     @GetMapping("/tickets/{id}")
     public Ticket findTicket(@PathVariable int id) {
         return ticketService.findById(id);

@@ -27,4 +27,6 @@ public interface LotteryService {
     List<Lottery> findLotteriesByCategoryId(int categoryId);
 
     List<Lottery> findActiveLotteriesByCategoryId(int categoryId);
+
+    List<Lottery> findActiveLotteriesByEmployeeId(int employeeId);
 }
