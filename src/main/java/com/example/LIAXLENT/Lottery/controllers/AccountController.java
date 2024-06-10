@@ -2,15 +2,12 @@ package com.example.LIAXLENT.Lottery.controllers;
 
 import com.example.LIAXLENT.Lottery.entities.Account;
 import com.example.LIAXLENT.Lottery.entities.Employee;
-import com.example.LIAXLENT.Lottery.entities.Lottery;
 import com.example.LIAXLENT.Lottery.services.AccountService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -41,7 +38,7 @@ public class AccountController {
         Integer balance = accountService.findBalanceByEmployeeId(loggedInUser.getId());
         return new ResponseEntity<>(balance, HttpStatus.OK);
     }
-
+    //Funktioner för eventuell Admin:
     @PostMapping("/account/employees/{employeeId}")
     public Account createAccount(@PathVariable(value = "employeeId") int employeeId){
         return accountService.createAccount(employeeId);

@@ -21,6 +21,7 @@ public class LotteryController {
         this.lotteryService = lotteryService;
     }
 
+    //Hämtar alla lotterier, alla aktiva lotterier eller alla inaktiva lotterier
     @GetMapping("/lotteries")
     public List<Lottery> findAllLotteries(@RequestParam(value = "active", required = false) Boolean active) {
         if (active != null && active) {
@@ -38,6 +39,7 @@ public class LotteryController {
         return lotteryService.findById(id);
     }
 
+    //Hämtar alla lotterier efter kategori eller hämtar alla aktiva lotterier efter kategori
     @GetMapping("/lotteries/categories/{categoryId}")
     public List<Lottery> findLotteriesByCategory(@PathVariable(value = "categoryId") int categoryId,
                                                  @RequestParam(value = "active", required = false) Boolean active) {
@@ -46,6 +48,25 @@ public class LotteryController {
         } else {
             return lotteryService.findLotteriesByCategoryId(categoryId);
         }
+    }
+
+    //Hämtar alla mina lotterier eller hämar alla mina aktiva lotterier
+    @GetMapping("/my-lotteries")
+    public ResponseEntity<?> findMyLotteries(HttpSession session,
+                                             @RequestParam (value = "active", required = false) Boolean active) {
+        Employee loggedInUser = (Employee) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return new ResponseEntity<>("Ingen användare är inloggad.", HttpStatus.UNAUTHORIZED);
+        }
+        else if (active != null && active){
+            List<Lottery> lotteries = lotteryService.findActiveLotteriesByEmployeeId(loggedInUser.getId());
+            return new ResponseEntity<>(lotteries, HttpStatus.OK);
+        }
+        else {
+            List<Lottery> lotteries = lotteryService.findLotteriesByEmployeeId(loggedInUser.getId());
+            return new ResponseEntity<>(lotteries, HttpStatus.OK);
+        }
+
     }
 
     @PostMapping("/lotteries/categories/{categoryId}")
@@ -62,6 +83,13 @@ public class LotteryController {
         return new ResponseEntity<>(createdLottery, HttpStatus.CREATED);
     }
 
+    //Funktioner för eventuell Admin:
+    @PostMapping("/lotteries/employees/{employeeId}/categories/{categoryId}")
+    public Lottery createLottery(@PathVariable (value = "employeeId") int employeeId,
+                                 @PathVariable (value = "categoryId") int categoryId,
+                                 @RequestBody Lottery lottery){
+        return lotteryService.createLottery(employeeId, lottery,categoryId);
+    }
     @PutMapping("/lotteries/{id}")
     public Lottery updateLottery(@PathVariable int id, @RequestBody Lottery updatedLottery) {
         Lottery lottery = lotteryService.findById(id);
@@ -89,15 +117,5 @@ public class LotteryController {
         }
     }
 
-    @GetMapping("/my-lotteries")
-    public ResponseEntity<?> findMyLotteries(HttpSession session) {
-        Employee loggedInUser = (Employee) session.getAttribute("loggedInUser");
-        System.out.println("Session ID vid hämtning av mina lotterier: " + session.getId());
-        if (loggedInUser == null) {
-            System.out.println("Ingen användare är inloggad.");
-            return new ResponseEntity<>("Ingen användare är inloggad.", HttpStatus.UNAUTHORIZED);
-        }
-        List<Lottery> lotteries = lotteryService.findLotteriesByEmployeeId(loggedInUser.getId());
-        return new ResponseEntity<>(lotteries, HttpStatus.OK);
-    }
+
 }

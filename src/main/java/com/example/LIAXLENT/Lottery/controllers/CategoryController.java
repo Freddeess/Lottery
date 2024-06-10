@@ -24,6 +24,8 @@ public class CategoryController {
     public Optional<Category> findCategory(@PathVariable int id){
         return categoryService.findById(id);
     }
+
+    //Funktioner för eventuell Admin:
     @PostMapping("/categories")
     public Category createCategory(@RequestBody Category category){
         return categoryService.save(category);

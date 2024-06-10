@@ -13,12 +13,10 @@ import java.util.Optional;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final AccountService accountService;
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, AccountService accountService) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
-        this.accountService = accountService;
     }
 
     @Override
@@ -71,30 +69,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employee == null) {
             throw new RuntimeException("Användare med email " + email + " hittades inte");
         }
-        System.out.println("Hittade anställd med email: " + email);
-
-        if (employee.getPassword() == null) {
+        if (employee.getPassword() == null){
             employee.setPassword(password);
-            employeeRepository.save(employee);
-            System.out.println("Uppdaterade lösenord för anställd med ID: " + employee.getId());
-
-            Account existingAccount = accountService.findAccountByEmployeeId(employee.getId());
-            if (existingAccount != null) {
-                System.out.println("Ett konto finns redan för denna anställd med ID: " + employee.getId());
-                return;
-            }
-            System.out.println("Inget konto hittades, skapar nytt konto för anställd med ID: " + employee.getId());
-
-            Account newAccount = new Account();
-            newAccount.setEmployee(employee);
-            newAccount.setBalance(0);
-
-            System.out.println("Sparar nytt konto för anställd med ID: " + employee.getId());
-            accountService.save(newAccount);
-
-            System.out.println("Registrering slutförd för email: " + email);
-        } else {
+        } else{
             throw new RuntimeException("Användaren är redan registrerad");
         }
+
+        employeeRepository.save(employee);
     }
+
 }
