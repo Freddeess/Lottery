@@ -34,23 +34,17 @@ public class LotteryController {
         }
     }
 
-    @GetMapping("/lotteries/{id}")
-    public Lottery findLottery(@PathVariable int id) {
-        return lotteryService.findById(id);
-    }
-
-    //Hämtar alla lotterier efter kategori eller hämtar alla aktiva lotterier efter kategori
-    @GetMapping("/lotteries/categories/{categoryId}")
-    public List<Lottery> findLotteriesByCategory(@PathVariable(value = "categoryId") int categoryId,
-                                                 @RequestParam(value = "active", required = false) Boolean active) {
+    @GetMapping("/lotteries/employees/{employeeId}")
+    public List<Lottery> findMyLotteries(@PathVariable (value = "employeeId") int employeeId,
+                                         @RequestParam(value = "active", required = false) Boolean active) {
         if (active != null && active) {
-            return lotteryService.findActiveLotteriesByCategoryId(categoryId);
-        } else {
-            return lotteryService.findLotteriesByCategoryId(categoryId);
+            return lotteryService.findActiveLotteriesByEmployeeId(employeeId);
+        }
+        else {
+            return lotteryService.findLotteriesByEmployeeId(employeeId);
         }
     }
 
-    //Hämtar alla mina lotterier eller hämar alla mina aktiva lotterier
     @GetMapping("/my-lotteries")
     public ResponseEntity<?> findMyLotteries(HttpSession session,
                                              @RequestParam (value = "active", required = false) Boolean active) {
@@ -68,6 +62,24 @@ public class LotteryController {
         }
 
     }
+
+    @GetMapping("/lotteries/{id}")
+    public Lottery findLottery(@PathVariable int id) {
+        return lotteryService.findById(id);
+    }
+
+    //Hämtar alla lotterier efter kategori eller hämtar alla aktiva lotterier efter kategori
+    @GetMapping("/lotteries/categories/{categoryId}")
+    public List<Lottery> findLotteriesByCategory(@PathVariable(value = "categoryId") int categoryId,
+                                                 @RequestParam(value = "active", required = false) Boolean active) {
+        if (active != null && active) {
+            return lotteryService.findActiveLotteriesByCategoryId(categoryId);
+        } else {
+            return lotteryService.findLotteriesByCategoryId(categoryId);
+        }
+    }
+
+
 
     @PostMapping("/lotteries/categories/{categoryId}")
     public ResponseEntity<?> createLottery(HttpSession session, @RequestBody Lottery lottery,

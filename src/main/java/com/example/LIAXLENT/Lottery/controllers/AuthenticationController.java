@@ -28,7 +28,8 @@ public class AuthenticationController {
             Employee employee = employeeService.findByEmail(email);
             session.setAttribute("loggedInUser", employee);
             System.out.println("Inloggad användare: " + employee.getEmail());
-            return ResponseEntity.ok("Inloggningen lyckades!");
+            //return ResponseEntity.ok("Inloggningen lyckades!");
+            return ResponseEntity.ok(String.valueOf(employee.getId()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

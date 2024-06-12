@@ -35,6 +35,11 @@ public class TicketController {
         }
     }
 
+    @GetMapping("/tickets/employees/{employeeId}")
+    public List<Ticket> findMyTickets(@PathVariable (value = "employeeId") int employeeId){
+        return ticketService.findByEmployeeId(employeeId);
+    }
+
     @GetMapping("/my-tickets")
     public ResponseEntity<?> findMyTickets(HttpSession session,
                                             @RequestParam(value = "winner", required = false) Boolean winner,

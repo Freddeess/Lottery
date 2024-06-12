@@ -19,6 +19,10 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    @GetMapping("/account/employees/{employeeId}")
+    public Account findAccount(@PathVariable (value = "employeeId") int employeeId){
+        return accountService.findAccountByEmployeeId(employeeId);
+    }
     @GetMapping("/my-account")
     public ResponseEntity<?> findMyAccount(HttpSession session) {
         Employee loggedInUser = (Employee) session.getAttribute("loggedInUser");
